@@ -1,0 +1,4 @@
+interface:
+  display_name: "Operate Scheduler"
+  short_description: "Monitor and stabilize live nk scheduler runs"
+  default_prompt: "Use $operate-scheduler to monitor this nk cluster, contain failures, and apply verified durable repairs."

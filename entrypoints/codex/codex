@@ -1,0 +1,58 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+
+import json
+import os
+import sys
+import time
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from codex_support import (  # noqa: E402
+    build_command,
+    discover_session_id,
+    output_tail,
+    run_with_pty,
+)
+
+
+def main() -> int:
+    prompt_file = Path(os.environ["NK_RUN_PROMPT_FILE"])
+    metadata_file = os.environ.get("NK_RUN_METADATA_FILE")
+    session_file_value = os.environ.get("NK_RUN_SESSION_FILE")
+    session_file = Path(session_file_value) if session_file_value else None
+    workspace = Path.cwd()
+
+    resume_id = None
+    if session_file is not None:
+        try:
+            resume_id = session_file.read_text(encoding="utf-8").strip() or None
+        except FileNotFoundError:
+            pass
+    command = build_command(
+        prompt_file.read_text(encoding="utf-8"), resume_id
+    )
+    started_epoch = time.time()
+    completed = run_with_pty(command, sys.stdout.buffer, cwd=workspace)
+    session_id = discover_session_id(workspace, started_epoch)
+    if session_id:
+        if metadata_file:
+            Path(metadata_file).write_text(
+                json.dumps({"session_id": session_id}), encoding="utf-8"
+            )
+        if session_file is not None:
+            session_file.parent.mkdir(parents=True, exist_ok=True)
+            temporary = session_file.with_suffix(".tmp")
+            temporary.write_text(session_id + "\n", encoding="utf-8")
+            os.replace(temporary, session_file)
+    elif completed.returncode and resume_id and session_file is not None:
+        # ponytail: retry the claim fresh on its next run; replaying immediately
+        # could duplicate partial work from a session that failed after resuming.
+        session_file.unlink(missing_ok=True)
+    if completed.returncode != 0 and completed.stderr:
+        print(output_tail(completed.stderr), file=sys.stderr)
+    return completed.returncode
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

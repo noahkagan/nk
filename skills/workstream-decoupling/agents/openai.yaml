@@ -1,0 +1,4 @@
+interface:
+  display_name: "Workstream Decoupling"
+  short_description: "Decouple task queues for safe parallel progress"
+  default_prompt: "Use $workstream-decoupling to audit this pending queue and unlock independent work."

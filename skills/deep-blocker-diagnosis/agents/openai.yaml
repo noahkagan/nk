@@ -1,0 +1,4 @@
+interface:
+  display_name: "Deep Blocker Diagnosis"
+  short_description: "Deepen blocked-task diagnosis with hard evidence"
+  default_prompt: "Use $deep-blocker-diagnosis to sync the workspace, deeply diagnose every blocked task, record durable evidence, and grill recommendations before routing."

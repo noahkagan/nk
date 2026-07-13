@@ -1,0 +1,4 @@
+interface:
+  display_name: "Task Coordination"
+  short_description: "Coordinate Git-backed workspace task lifecycles"
+  default_prompt: "Use $task-coordination to claim, route, review, validate, or complete a workspace task safely."

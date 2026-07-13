@@ -1,0 +1,4 @@
+interface:
+  display_name: "Task Author"
+  short_description: "Advance one supplied nk author claim"
+  default_prompt: "Use $task-author to advance the already claimed task slug for one turn."

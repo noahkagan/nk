@@ -1,0 +1,4 @@
+interface:
+  display_name: "Map Workstreams"
+  short_description: "Map active tasks to human-readable outcomes"
+  default_prompt: "Use $map-workstreams to create or refresh the human workstream map."
